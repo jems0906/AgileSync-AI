@@ -1,8 +1,9 @@
 const WORKFLOW = ["backlog", "selected", "in-progress", "review", "done"];
+const DB_STATE_ID = 1;
 
 const now = new Date().toISOString();
 
-const state = {
+const defaultState = {
   epics: [
     {
       id: "epic-1",
@@ -105,12 +106,74 @@ const state = {
   meetings: []
 };
 
-const counters = {
+const defaultCounters = {
   epic: 3,
   story: 3,
   task: 3,
   meeting: 1,
   comment: 2
+};
+
+let state = JSON.parse(JSON.stringify(defaultState));
+let counters = { ...defaultCounters };
+
+const resetToDefaultState = () => {
+  state = JSON.parse(JSON.stringify(defaultState));
+  counters = { ...defaultCounters };
+};
+
+const ensureD1StateTable = async (env) => {
+  if (!env?.DB) {
+    return;
+  }
+
+  await env.DB.prepare(
+    `CREATE TABLE IF NOT EXISTS app_state (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      state_json TEXT NOT NULL,
+      counters_json TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )`
+  ).run();
+};
+
+const loadStateFromD1 = async (env) => {
+  if (!env?.DB) {
+    return false;
+  }
+
+  await ensureD1StateTable(env);
+  const row = await env.DB.prepare("SELECT state_json, counters_json FROM app_state WHERE id = ?")
+    .bind(DB_STATE_ID)
+    .first();
+
+  if (!row) {
+    resetToDefaultState();
+    await persistStateToD1(env);
+    return true;
+  }
+
+  state = JSON.parse(row.state_json);
+  counters = JSON.parse(row.counters_json);
+  return true;
+};
+
+const persistStateToD1 = async (env) => {
+  if (!env?.DB) {
+    return;
+  }
+
+  await ensureD1StateTable(env);
+  await env.DB.prepare(
+    `INSERT INTO app_state (id, state_json, counters_json, updated_at)
+     VALUES (?, ?, ?, ?)
+     ON CONFLICT(id) DO UPDATE SET
+      state_json = excluded.state_json,
+      counters_json = excluded.counters_json,
+      updated_at = excluded.updated_at`
+  )
+    .bind(DB_STATE_ID, JSON.stringify(state), JSON.stringify(counters), new Date().toISOString())
+    .run();
 };
 
 const json = (data, init = {}) => {
@@ -449,12 +512,20 @@ async function handleApi(req, env) {
   const method = req.method.toUpperCase();
   const role = getRole(req);
 
+  if (env?.DB) {
+    await loadStateFromD1(env);
+  }
+
   if (method === "OPTIONS") {
     return new Response(null, { status: 204 });
   }
 
   if (path === "/health" && method === "GET") {
-    return json({ ok: true, service: "agilesync-ai-cloudflare" });
+    return json({
+      ok: true,
+      service: "agilesync-ai-cloudflare",
+      persistence: env?.DB ? "d1" : "memory"
+    });
   }
 
   if (path === "/artifacts" && method === "GET") {
@@ -475,7 +546,9 @@ async function handleApi(req, env) {
   if (path === "/epics" && method === "POST") {
     const body = await parseBody(req);
     if (!body.title) return json({ error: "title is required" }, { status: 400 });
-    return json(createEpic(body), { status: 201 });
+    const epic = createEpic(body);
+    await persistStateToD1(env);
+    return json(epic, { status: 201 });
   }
 
   if (path.startsWith("/epics/") && method === "PATCH") {
@@ -483,19 +556,25 @@ async function handleApi(req, env) {
     const id = path.split("/")[2];
     const epic = updateEpic(id, body);
     if (!epic) return json({ error: "Epic not found" }, { status: 404 });
+    await persistStateToD1(env);
     return json(epic);
   }
 
   if (path.startsWith("/epics/") && method === "DELETE") {
     const id = path.split("/")[2];
     const deleted = deleteEpic(id);
+    if (deleted) {
+      await persistStateToD1(env);
+    }
     return deleted ? new Response(null, { status: 204 }) : json({ error: "Epic not found" }, { status: 404 });
   }
 
   if (path === "/stories" && method === "POST") {
     const body = await parseBody(req);
     if (!body.title || !body.epicId) return json({ error: "title and epicId are required" }, { status: 400 });
-    return json(createStory(body), { status: 201 });
+    const story = createStory(body);
+    await persistStateToD1(env);
+    return json(story, { status: 201 });
   }
 
   if (path.startsWith("/stories/") && method === "PATCH") {
@@ -503,19 +582,25 @@ async function handleApi(req, env) {
     const id = path.split("/")[2];
     const story = updateStory(id, body);
     if (!story) return json({ error: "Story not found" }, { status: 404 });
+    await persistStateToD1(env);
     return json(story);
   }
 
   if (path.startsWith("/stories/") && method === "DELETE") {
     const id = path.split("/")[2];
     const deleted = deleteStory(id);
+    if (deleted) {
+      await persistStateToD1(env);
+    }
     return deleted ? new Response(null, { status: 204 }) : json({ error: "Story not found" }, { status: 404 });
   }
 
   if (path === "/tasks" && method === "POST") {
     const body = await parseBody(req);
     if (!body.title || !body.storyId) return json({ error: "title and storyId are required" }, { status: 400 });
-    return json(createTask(body), { status: 201 });
+    const task = createTask(body);
+    await persistStateToD1(env);
+    return json(task, { status: 201 });
   }
 
   if (path.startsWith("/tasks/") && path.endsWith("/status") && method === "PATCH") {
@@ -523,6 +608,7 @@ async function handleApi(req, env) {
     const id = path.split("/")[2];
     const updated = updateTaskStatus(id, body.status);
     if (!updated) return json({ error: "Invalid task id or status" }, { status: 400 });
+    await persistStateToD1(env);
     return json(updated);
   }
 
@@ -531,12 +617,16 @@ async function handleApi(req, env) {
     const id = path.split("/")[2];
     const task = updateTask(id, body);
     if (!task) return json({ error: "Task not found" }, { status: 404 });
+    await persistStateToD1(env);
     return json(task);
   }
 
   if (path.startsWith("/tasks/") && method === "DELETE") {
     const id = path.split("/")[2];
     const deleted = deleteTask(id);
+    if (deleted) {
+      await persistStateToD1(env);
+    }
     return deleted ? new Response(null, { status: 204 }) : json({ error: "Task not found" }, { status: 404 });
   }
 
@@ -545,7 +635,9 @@ async function handleApi(req, env) {
     if (!body.itemType || !body.itemId || !body.content) {
       return json({ error: "itemType, itemId and content are required" }, { status: 400 });
     }
-    return json(createComment(body, role), { status: 201 });
+    const comment = createComment(body, role);
+    await persistStateToD1(env);
+    return json(comment, { status: 201 });
   }
 
   if (path === "/ai/story-draft" && method === "POST") {
@@ -604,6 +696,7 @@ async function handleApi(req, env) {
     }
 
     const meeting = saveMeeting({ title, notes });
+    await persistStateToD1(env);
     const prompt = `Meeting notes:\n${notes}\nReturn four sections:\n1) Requirements\n2) Tasks\n3) Risks\n4) Dependencies`;
 
     try {

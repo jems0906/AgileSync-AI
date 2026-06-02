@@ -148,14 +148,21 @@ Steps:
 	- `OPENAI_API_KEY` (optional)
 	- `OPENAI_MODEL` (optional, default `gpt-4.1-mini`)
 	- `CORS_ORIGIN` (optional, defaults to `*`)
-5. Deploy and verify:
+5. Create and bind a D1 database so artifact data persists across restarts:
+	- Create DB: `npx wrangler d1 create agilesync-ai-db`
+	- Copy returned `database_id` into [client/wrangler.toml](client/wrangler.toml)
+	- Apply migration: `npx wrangler d1 migrations apply agilesync-ai-db`
+	- In Cloudflare Pages project settings, add D1 binding:
+	  - Variable name: `DB`
+	  - D1 database: `agilesync-ai-db`
+6. Deploy and verify:
 	- `GET /api/health`
 
 Notes for Cloudflare runtime:
 
-- Pages Functions run on the Workers runtime, so this path uses in-memory app state (no PostgreSQL persistence).
-- State resets can happen on cold starts or rollout events.
-- If you need durable persistence on Cloudflare, the next step is wiring D1/R2/KV for artifacts and meetings.
+- Pages Functions run on the Workers runtime.
+- With `DB` binding configured, API state persists in D1.
+- Without `DB`, the app automatically falls back to in-memory state.
 
 ## Release Notes
 
