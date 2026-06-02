@@ -1,0 +1,77 @@
+name: Smoke CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  smoke-tests:
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install root dependencies
+        run: npm install
+        shell: pwsh
+
+      - name: Install server dependencies
+        run: npm install --prefix server
+        shell: pwsh
+
+      - name: Install client dependencies
+        run: npm install --prefix client
+        shell: pwsh
+
+      - name: Start API server
+        shell: pwsh
+        run: |
+          $server = Start-Process -FilePath node -ArgumentList "src/index.js" -WorkingDirectory "server" -PassThru
+          "SERVER_PID=$($server.Id)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Wait for API health
+        shell: pwsh
+        run: |
+          $healthUrl = "http://localhost:4000/api/health"
+          $ready = $false
+          for ($i = 0; $i -lt 60; $i++) {
+            try {
+              $response = Invoke-RestMethod -Method Get -Uri $healthUrl -TimeoutSec 3
+              if ($response.ok -eq $true) {
+                $ready = $true
+                break
+              }
+            }
+            catch {
+              # Waiting for server startup.
+            }
+
+            Start-Sleep -Milliseconds 500
+          }
+
+          if (-not $ready) {
+            throw "API did not become healthy in time"
+          }
+
+      - name: Run API smoke
+        run: npm run smoke:api
+        shell: pwsh
+
+      - name: Run client smoke
+        run: npm run smoke:client
+        shell: pwsh
+
+      - name: Stop API server
+        if: always()
+        shell: pwsh
+        run: |
+          if ($env:SERVER_PID) {
+            Stop-Process -Id ([int]$env:SERVER_PID) -Force -ErrorAction SilentlyContinue
+          }

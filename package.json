@@ -1,0 +1,17 @@
+{
+  "name": "agilesync-ai",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently -n api,client -c yellow,cyan \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "build": "npm run build:reliable --prefix client",
+    "start": "npm run start --prefix server",
+    "smoke:api": "npm run smoke:api --prefix server",
+    "smoke:client": "npm run smoke:client --prefix client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
