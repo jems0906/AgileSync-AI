@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: agilesync-ai
+    env: node
+    rootDir: .
+    buildCommand: |
+      npm install --prefix server
+      npm install --prefix client
+      npm run build --prefix client
+    startCommand: npm run start --prefix server
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: OPENAI_MODEL
+        value: gpt-4.1-mini
+      - key: CORS_ORIGIN
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false

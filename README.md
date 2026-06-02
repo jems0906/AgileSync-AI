@@ -110,6 +110,25 @@ GitHub Actions now runs smoke validation on every push and pull request using [s
 - Runs API smoke (`npm run smoke:api`).
 - Runs client smoke (`npm run smoke:client`).
 
+## Deploy To Render
+
+This repo includes a Render Blueprint file at [render.yaml](render.yaml).
+
+1. Push this repository to GitHub.
+2. In Render, choose **New +** -> **Blueprint**.
+3. Select this GitHub repository and apply the Blueprint.
+4. In Render service settings, set these env vars:
+	- `CORS_ORIGIN`: your Render app URL (for example `https://agilesync-ai.onrender.com`)
+	- `OPENAI_API_KEY`: optional, enables real AI output
+	- `DATABASE_URL`: optional, app runs with in-memory fallback if omitted
+5. Deploy and verify health:
+	- `GET /api/health`
+
+Build/start commands used by Render:
+
+- Build: `npm install --prefix server && npm install --prefix client && npm run build --prefix client`
+- Start: `npm run start --prefix server`
+
 ## Release Notes
 
 - Current release: [CHANGELOG.md](CHANGELOG.md)
