@@ -129,6 +129,34 @@ Build/start commands used by Render:
 - Build: `npm install --prefix server && npm install --prefix client && npm run build --prefix client`
 - Start: `npm run start --prefix server`
 
+## Deploy To Cloudflare
+
+Cloudflare deployment is configured in `client/` using Pages + Functions:
+
+- Static app: React build output (`client/dist`)
+- API routes: `client/functions/api/[[path]].js` (same `/api/*` contract used by the UI)
+
+Steps:
+
+1. In Cloudflare Dashboard, go to **Workers & Pages** -> **Create** -> **Pages**.
+2. Connect this GitHub repository.
+3. Use these build settings:
+	- Root directory: `client`
+	- Build command: `npm install && npm run build`
+	- Build output directory: `dist`
+4. Add environment variables for Pages Functions:
+	- `OPENAI_API_KEY` (optional)
+	- `OPENAI_MODEL` (optional, default `gpt-4.1-mini`)
+	- `CORS_ORIGIN` (optional, defaults to `*`)
+5. Deploy and verify:
+	- `GET /api/health`
+
+Notes for Cloudflare runtime:
+
+- Pages Functions run on the Workers runtime, so this path uses in-memory app state (no PostgreSQL persistence).
+- State resets can happen on cold starts or rollout events.
+- If you need durable persistence on Cloudflare, the next step is wiring D1/R2/KV for artifacts and meetings.
+
 ## Release Notes
 
 - Current release: [CHANGELOG.md](CHANGELOG.md)
