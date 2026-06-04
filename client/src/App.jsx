@@ -362,6 +362,7 @@ export default function App() {
 
   return (
     <div className="page min-h-screen">
+      <a className="skip-link" href="#main-content">Skip to main content</a>
       <div className="shell mx-auto w-full max-w-[1440px] px-4 py-6 md:px-6">
         <header className="hero rounded-[30px] p-7 shadow-card md:p-8">
           <p className="kicker">Agile Team Workspace</p>
@@ -381,6 +382,8 @@ export default function App() {
             </div>
           </div>
         </header>
+
+        <main id="main-content">
 
         <div className="cards mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
           <Card title="Epics" value={totals.epics} subtitle="Business initiatives" />
@@ -439,8 +442,8 @@ export default function App() {
               title="Jira-like Sprint Workflow"
               right={(
                 <div className="panel-filters">
-                  <input ref={boardSearchRef} className="input" placeholder="Search tasks, assignees, roles" value={boardQuery} onChange={(event) => setBoardQuery(event.target.value)} />
-                  <select className="select" value={boardStatusFilter} onChange={(event) => setBoardStatusFilter(event.target.value)}>
+                  <input ref={boardSearchRef} className="input" aria-label="Search workflow tasks" placeholder="Search tasks, assignees, roles" value={boardQuery} onChange={(event) => setBoardQuery(event.target.value)} />
+                  <select className="select" aria-label="Filter workflow by status" value={boardStatusFilter} onChange={(event) => setBoardStatusFilter(event.target.value)}>
                     <option value="all">All statuses</option>
                     {workflow.map((status) => <option key={status} value={status}>{status}</option>)}
                   </select>
@@ -460,7 +463,7 @@ export default function App() {
                         <div key={task.id} className="task">
                           <p className="task-title">{task.title}</p>
                           <p className="task-meta">{task.assignee || "Unassigned"}</p>
-                          <select className="select" value={task.status} onChange={async (event) => { await api.updateTaskStatus(task.id, event.target.value, role); showToast("Task status updated."); await load(); }}>
+                          <select className="select" aria-label={`Set status for task ${task.title}`} value={task.status} onChange={async (event) => { await api.updateTaskStatus(task.id, event.target.value, role); showToast("Task status updated."); await load(); }}>
                             {workflow.map((next) => <option key={next} value={next}>{next}</option>)}
                           </select>
                           <div className="inline-actions">
@@ -479,7 +482,7 @@ export default function App() {
 
             <Section title="Backlog Prioritization" right={<span className="small">Sorted by weighted value / effort</span>}>
               <div className="panel-filters panel-filters-tight">
-                <input ref={backlogSearchRef} className="input" placeholder="Search backlog stories" value={backlogQuery} onChange={(event) => setBacklogQuery(event.target.value)} />
+                <input ref={backlogSearchRef} className="input" aria-label="Search backlog stories" placeholder="Search backlog stories" value={backlogQuery} onChange={(event) => setBacklogQuery(event.target.value)} />
                 <button className="button button-ghost button-small" type="button" onClick={() => setBacklogQuery("")}>Clear</button>
               </div>
               <div className="table-wrap">
@@ -580,14 +583,14 @@ export default function App() {
               <div className="stack">
                 <input className="input" value={meetingTitle} onChange={(event) => setMeetingTitle(event.target.value)} placeholder="Meeting title" />
                 <textarea ref={meetingRef} className="textarea" value={meetingNotes} onChange={(event) => setMeetingNotes(event.target.value)} placeholder="Paste notes here for extraction into requirements, tasks, risks, and dependencies" />
-                <input className="input" type="file" accept=".txt,.md,.json,.doc,.docx" onChange={(event) => setMeetingFile(event.target.files?.[0] || null)} />
+                <input className="input" aria-label="Upload meeting notes file" type="file" accept=".txt,.md,.json,.doc,.docx" onChange={(event) => setMeetingFile(event.target.files?.[0] || null)} />
                 <button className="button button-secondary" type="button" onClick={processMeeting}>Convert meeting notes</button>
               </div>
             </Section>
 
             <Section title="Collaboration Comments">
               <div className="stack">
-                <select className="select" value={selectedStoryId} onChange={(event) => setSelectedStoryId(event.target.value)}>
+                <select className="select" aria-label="Select story for comments" value={selectedStoryId} onChange={(event) => setSelectedStoryId(event.target.value)}>
                   {artifacts.stories.map((story) => <option key={story.id} value={story.id}>{story.id}: {story.title}</option>)}
                 </select>
                 <textarea ref={commentRef} className="textarea" value={commentText} onChange={(event) => setCommentText(event.target.value)} placeholder="Add an update, risk, or action" />
@@ -616,6 +619,7 @@ export default function App() {
             </Section>
           </div>
         </div>
+        </main>
       </div>
 
       {toast ? (
