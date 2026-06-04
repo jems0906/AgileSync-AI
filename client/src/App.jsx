@@ -347,6 +347,19 @@ export default function App() {
     showToast("Meeting notes processed.");
   };
 
+  const addComment = async () => {
+    if (!selectedStoryId || !commentText.trim()) return;
+    await api.addComment({
+      itemType: "story",
+      itemId: selectedStoryId,
+      content: commentText.trim(),
+      author: role
+    }, role);
+    setCommentText("");
+    showToast("Comment added.");
+    await load();
+  };
+
   return (
     <div className="page min-h-screen">
       <div className="shell mx-auto w-full max-w-[1440px] px-4 py-6 md:px-6">
