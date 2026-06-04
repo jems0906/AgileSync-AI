@@ -1,0 +1,35 @@
+name: Accessibility CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  accessibility-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install client dependencies
+        run: npm install --prefix client
+
+      - name: Build client
+        run: npm run build --prefix client
+
+      - name: Start static server
+        run: |
+          npx -y serve -s client/dist -l 4173 &
+
+      - name: Wait for app
+        run: npx -y wait-on http://127.0.0.1:4173
+
+      - name: Run accessibility audit
+        run: npx -y pa11y-ci http://127.0.0.1:4173 --threshold 0

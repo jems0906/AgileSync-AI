@@ -115,6 +115,12 @@ GitHub Actions now runs smoke validation on every push and pull request using [s
 - Runs API smoke (`npm run smoke:api`).
 - Runs client smoke (`npm run smoke:client`).
 
+Automated accessibility validation runs on every push and pull request using [a11y-ci.yml](.github/workflows/a11y-ci.yml):
+
+- Builds the client app.
+- Serves the production build.
+- Runs `pa11y-ci` against the homepage with strict failure threshold.
+
 Additional production monitoring runs via [pages-health-check.yml](.github/workflows/pages-health-check.yml):
 
 - Calls `https://agilesync-ai.pages.dev/api/health`
