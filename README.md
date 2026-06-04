@@ -153,7 +153,7 @@ Steps:
 	- In Cloudflare Pages project settings, add D1 binding:
 	  - Variable name: `DB`
 	  - D1 database: `agilesync-ai-db`
-	- Run migration once from your machine (inside `client/`): `npx wrangler d1 migrations apply agilesync-ai-db`
+	- Run migration once from your machine (inside `client/`): `npx wrangler d1 migrations apply agilesync-ai-db --cwd client`
 6. Deploy and verify:
 	- `GET /api/health`
 
