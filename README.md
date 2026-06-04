@@ -110,6 +110,12 @@ GitHub Actions now runs smoke validation on every push and pull request using [s
 - Runs API smoke (`npm run smoke:api`).
 - Runs client smoke (`npm run smoke:client`).
 
+Additional production monitoring runs via [pages-health-check.yml](.github/workflows/pages-health-check.yml):
+
+- Calls `https://agilesync-ai.pages.dev/api/health`
+- Fails if `ok` is not `true`
+- Fails if `persistence` is not `d1`
+
 ## Deploy To Render
 
 This repo includes a Render Blueprint file at [render.yaml](render.yaml).
@@ -148,6 +154,7 @@ Steps:
 	- `OPENAI_API_KEY` (optional)
 	- `OPENAI_MODEL` (optional, default `gpt-4.1-mini`)
 	- `CORS_ORIGIN` (optional, defaults to `*`)
+	- Set values separately for `Production` and `Preview` as needed
 5. Create and bind a D1 database so artifact data persists across restarts:
 	- Create DB: `npx wrangler d1 create agilesync-ai-db`
 	- In Cloudflare Pages project settings, add D1 binding:
@@ -156,6 +163,12 @@ Steps:
 	- Run migration once from your machine (inside `client/`): `npx wrangler d1 migrations apply agilesync-ai-db --cwd client`
 6. Deploy and verify:
 	- `GET /api/health`
+
+Recommended production values:
+
+- `CORS_ORIGIN`: `https://agilesync-ai.pages.dev` (or your custom domain)
+- `OPENAI_MODEL`: `gpt-4.1-mini` (or your preferred model)
+- `OPENAI_API_KEY`: set in `Production` only unless preview AI output is required
 
 Notes for Cloudflare runtime:
 

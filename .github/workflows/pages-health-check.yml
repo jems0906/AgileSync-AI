@@ -1,0 +1,22 @@
+name: Pages Health Check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+jobs:
+  production-health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check Cloudflare Pages health endpoint
+        env:
+          HEALTH_URL: https://agilesync-ai.pages.dev/api/health
+        run: |
+          set -euo pipefail
+          response=$(curl -fsSL "$HEALTH_URL")
+          echo "Health response: $response"
+
+          node -e "const payload = JSON.parse(process.argv[1]); if (!payload.ok) { throw new Error('Health check did not return ok=true'); } if (payload.persistence !== 'd1') { throw new Error('Expected persistence=d1 but got ' + payload.persistence); }" "$response"
