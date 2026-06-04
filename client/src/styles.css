@@ -132,6 +132,17 @@ button { cursor: pointer; }
     align-items: start;
   }
 }
+
+@media (min-width: 900px) and (max-width: 1499px) {
+  .layout > :last-child {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .layout > :last-child > :first-child {
+    grid-column: 1 / -1;
+  }
+}
 .list-stack, .story-list, .comment-list, .response { display: grid; gap: 10px; }
 .note { background: #f8fafc; border: 1px solid rgba(148,163,184,0.18); border-radius: 16px; padding: 12px; }
 .note-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
