@@ -2,6 +2,11 @@
 
 AgileSync AI is a full-stack web app for Agile teams to manage sprint planning, backlog refinement, meeting notes, and action items with AI support.
 
+## Status
+
+[![Smoke CI](https://github.com/jems0906/AgileSync-AI/actions/workflows/smoke-ci.yml/badge.svg?branch=main)](https://github.com/jems0906/AgileSync-AI/actions/workflows/smoke-ci.yml)
+[![Pages Health Check](https://github.com/jems0906/AgileSync-AI/actions/workflows/pages-health-check.yml/badge.svg?branch=main)](https://github.com/jems0906/AgileSync-AI/actions/workflows/pages-health-check.yml)
+
 ## Features
 
 - Agile artifacts: epics, user stories, tasks, sprint board
