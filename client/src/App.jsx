@@ -417,8 +417,8 @@ export default function App() {
           </div>
         </section>
 
-        <div className="layout mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-          <div className="stack space-y-4">
+        <div className="layout mt-4">
+          <div className="stack">
             <Section title="Epics">
               {artifacts.epics.length ? (
                 <div className="list-stack">
@@ -567,7 +567,7 @@ export default function App() {
             </Section>
           </div>
 
-          <div className="stack space-y-4">
+          <div className="stack">
             <Section title="AI Workspace">
               <div className="stack">
                 <select className="select" value={aiAction} onChange={(event) => setAiAction(event.target.value)}>
