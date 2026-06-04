@@ -64,6 +64,10 @@ jobs:
         run: npm run smoke:api
         shell: pwsh
 
+      - name: Run API contract checks
+        run: npm run contract:api --prefix server
+        shell: pwsh
+
       - name: Run client smoke
         run: npm run smoke:client
         shell: pwsh

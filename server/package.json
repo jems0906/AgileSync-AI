@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
-    "smoke:api": "powershell -ExecutionPolicy Bypass -File ./scripts/smoke-api.ps1"
+    "smoke:api": "powershell -ExecutionPolicy Bypass -File ./scripts/smoke-api.ps1",
+    "contract:api": "node ./scripts/contract-api.mjs"
   },
   "dependencies": {
     "cors": "^2.8.5",
