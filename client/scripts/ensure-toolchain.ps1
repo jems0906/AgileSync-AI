@@ -140,7 +140,9 @@ function Set-NativeToolEnvironment {
   $rollupPackageJsonPath = Join-Path $rollupPackageDir "package.json"
 
   $escapedRollupNode = $stagedRollupNode.Replace('\', '\\')
-  $rollupLoaderContent = 'module.exports = require("' + $escapedRollupNode + '");'
+  $rollupLoaderContent = @"
+module.exports = require("$escapedRollupNode");
+"@
   Set-Content -LiteralPath $rollupLoaderPath -Value $rollupLoaderContent -Encoding ASCII
 
   $rollupPackageJson = Get-Content -LiteralPath $rollupPackageJsonPath -Raw | ConvertFrom-Json
