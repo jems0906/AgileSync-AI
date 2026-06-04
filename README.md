@@ -150,11 +150,10 @@ Steps:
 	- `CORS_ORIGIN` (optional, defaults to `*`)
 5. Create and bind a D1 database so artifact data persists across restarts:
 	- Create DB: `npx wrangler d1 create agilesync-ai-db`
-	- Copy returned `database_id` into [client/wrangler.toml](client/wrangler.toml)
-	- Apply migration: `npx wrangler d1 migrations apply agilesync-ai-db`
 	- In Cloudflare Pages project settings, add D1 binding:
 	  - Variable name: `DB`
 	  - D1 database: `agilesync-ai-db`
+	- Run migration once from your machine (inside `client/`): `npx wrangler d1 migrations apply agilesync-ai-db`
 6. Deploy and verify:
 	- `GET /api/health`
 
