@@ -30,6 +30,11 @@ body {
 button, select, textarea, input { font: inherit; }
 button { cursor: pointer; }
 
+:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.7);
+  outline-offset: 2px;
+}
+
 .page { min-height: 100vh; }
 .shell {
   max-width: 1440px;
@@ -69,8 +74,13 @@ button { cursor: pointer; }
   color: var(--ink);
   padding: 12px 14px;
   outline: none;
+  transition: border-color .16s ease, box-shadow .16s ease;
 }
 .textarea { min-height: 120px; resize: vertical; }
+.select:focus-visible, .input:focus-visible, .textarea:focus-visible {
+  border-color: rgba(37, 99, 235, 0.8);
+  box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.45);
+}
 .cards { display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 18px; }
 .card, .panel {
   background: var(--card);
@@ -114,6 +124,7 @@ button { cursor: pointer; }
   transition: transform .18s ease, background .18s ease, opacity .18s ease;
 }
 .button:hover { transform: translateY(-1px); background: var(--accent-dark); }
+.button:focus-visible { box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.5); }
 .button-secondary { background: #0f172a; }
 .button-ghost { background: #e2e8f0; color: #0f172a; }
 .button-small { padding: 7px 10px; border-radius: 10px; font-size: 12px; }
@@ -226,6 +237,15 @@ button { cursor: pointer; }
 @keyframes riseIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @media (max-width: 1200px) {
