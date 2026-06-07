@@ -19,6 +19,11 @@ jobs:
         with:
           install-dependencies: true
 
+      - name: Verify Chrome
+        run: |
+          echo "Resolved chrome path: ${{ steps.setup-chrome.outputs.chrome-path }}"
+          "${{ steps.setup-chrome.outputs.chrome-path }}" --version
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -40,4 +45,5 @@ jobs:
       - name: Run accessibility audit
         env:
           CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: npx -y pa11y-ci --config .pa11yci.cjs http://127.0.0.1:4173 --threshold 0
