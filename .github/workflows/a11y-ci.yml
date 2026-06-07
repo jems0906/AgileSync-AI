@@ -39,5 +39,9 @@ jobs:
             command -v chromium ||
             command -v chromium-browser
           )"
-          test -n "$PUPPETEER_EXECUTABLE_PATH"
+          if [ -z "$PUPPETEER_EXECUTABLE_PATH" ]; then
+            echo "No Chrome or Chromium executable found on the runner."
+            exit 1
+          fi
+          echo "Using browser at $PUPPETEER_EXECUTABLE_PATH"
           npx -y pa11y-ci http://127.0.0.1:4173 --threshold 0
