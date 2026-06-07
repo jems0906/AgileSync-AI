@@ -18,47 +18,27 @@ jobs:
         with:
           node-version: 24
 
-      - name: Install accessibility tooling
-        run: npm install --no-save pa11y puppeteer
-
-      - name: Install Puppeteer browser
-        run: PUPPETEER_CACHE_DIR="$HOME/.cache/puppeteer" npx puppeteer browsers install chrome
-
-      - name: Resolve Puppeteer Chrome path
-        run: |
-          CHROME_PATH="$(PUPPETEER_CACHE_DIR="$HOME/.cache/puppeteer" node -e "const p=require('puppeteer'); process.stdout.write(p.executablePath());")"
-          if [ -z "$CHROME_PATH" ] || [ ! -x "$CHROME_PATH" ]; then
-            echo "Resolved CHROME_PATH is invalid: $CHROME_PATH"
-            exit 1
-          fi
-          echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
-          "$CHROME_PATH" --version
-
       - name: Install client dependencies
         run: npm install --prefix client
 
       - name: Build client
         run: npm run build --prefix client
 
-      - name: Start static server
-        run: |
-          npx -y serve -s client/dist -l 4173 &
-
-      - name: Wait for app
-        run: npx -y wait-on http://127.0.0.1:4173
+      - name: Install accessibility tooling
+        run: npm install --no-save html-validate
 
       - name: Run accessibility audit
         run: |
-          echo "Running Pa11y with CHROME_PATH=$CHROME_PATH"
+          echo "Running html-validate against source and built HTML"
           set +e
-          PUPPETEER_CACHE_DIR="$HOME/.cache/puppeteer" PUPPETEER_EXECUTABLE_PATH="$CHROME_PATH" npx pa11y --config .pa11y.cjs http://127.0.0.1:4173 --threshold 0 --reporter json > pa11y-report.json
+          npx html-validate --formatter json client/index.html client/dist/index.html > html-validate-report.json
           EXIT_CODE=$?
-          cat pa11y-report.json
+          cat html-validate-report.json
           exit $EXIT_CODE
 
       - name: Upload accessibility report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pa11y-report
-          path: pa11y-report.json
+          name: html-validate-report
+          path: html-validate-report.json
