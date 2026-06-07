@@ -13,26 +13,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Resolve system Chrome path
-        run: |
-          CHROME_PATH="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
-          if [ -z "$CHROME_PATH" ]; then
-            echo "No Chrome/Chromium binary found on runner"
-            exit 1
-          fi
-          echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
-          "$CHROME_PATH" --version
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
 
       - name: Install accessibility tooling
-        run: npm install --no-save pa11y-ci puppeteer
+        run: npm install --no-save pa11y puppeteer
 
       - name: Install Puppeteer browser
-        run: npx puppeteer browsers install chrome --path "$HOME/.cache/puppeteer"
+        run: PUPPETEER_CACHE_DIR="$HOME/.cache/puppeteer" npx puppeteer browsers install chrome
+
+      - name: Resolve Puppeteer Chrome path
+        run: |
+          CHROME_PATH="$(PUPPETEER_CACHE_DIR="$HOME/.cache/puppeteer" node -e "const p=require('puppeteer'); process.stdout.write(p.executablePath());")"
+          if [ -z "$CHROME_PATH" ] || [ ! -x "$CHROME_PATH" ]; then
+            echo "Resolved CHROME_PATH is invalid: $CHROME_PATH"
+            exit 1
+          fi
+          echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
+          "$CHROME_PATH" --version
 
       - name: Install client dependencies
         run: npm install --prefix client
@@ -50,4 +50,4 @@ jobs:
       - name: Run accessibility audit
         run: |
           echo "Running Pa11y with CHROME_PATH=$CHROME_PATH"
-          PUPPETEER_CACHE_DIR="$HOME/.cache/puppeteer" PUPPETEER_EXECUTABLE_PATH="$CHROME_PATH" npx pa11y-ci --config .pa11yci.cjs http://127.0.0.1:4173 --threshold 0
+          PUPPETEER_CACHE_DIR="$HOME/.cache/puppeteer" PUPPETEER_EXECUTABLE_PATH="$CHROME_PATH" npx pa11y --config .pa11y.cjs http://127.0.0.1:4173 --threshold 0
