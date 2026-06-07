@@ -524,40 +524,40 @@ export default function App() {
                 <div className="note">
                   <h4>Epic</h4>
                   <div className="stack">
-                    <input className="input" placeholder="Epic title" value={epicDraft.title} onChange={(event) => setEpicDraft((current) => ({ ...current, title: event.target.value }))} />
-                    <textarea className="textarea" placeholder="Epic description" value={epicDraft.description} onChange={(event) => setEpicDraft((current) => ({ ...current, description: event.target.value }))} />
-                    <input className="input" type="number" min="1" max="10" value={epicDraft.priority} onChange={(event) => setEpicDraft((current) => ({ ...current, priority: event.target.value }))} />
+                    <input className="input" aria-label="Epic title" placeholder="Epic title" value={epicDraft.title} onChange={(event) => setEpicDraft((current) => ({ ...current, title: event.target.value }))} />
+                    <textarea className="textarea" aria-label="Epic description" placeholder="Epic description" value={epicDraft.description} onChange={(event) => setEpicDraft((current) => ({ ...current, description: event.target.value }))} />
+                    <input className="input" aria-label="Epic priority" type="number" min="1" max="10" value={epicDraft.priority} onChange={(event) => setEpicDraft((current) => ({ ...current, priority: event.target.value }))} />
                     <button className="button" type="button" onClick={createEpic}>Create Epic</button>
                   </div>
                 </div>
                 <div className="note">
                   <h4>Story</h4>
                   <div className="stack">
-                    <select className="select" value={storyDraft.epicId} onChange={(event) => setStoryDraft((current) => ({ ...current, epicId: event.target.value }))}>
+                    <select className="select" aria-label="Select epic for story" value={storyDraft.epicId} onChange={(event) => setStoryDraft((current) => ({ ...current, epicId: event.target.value }))}>
                       <option value="">Select epic</option>
                       {artifacts.epics.map((epic) => <option key={epic.id} value={epic.id}>{epic.title}</option>)}
                     </select>
-                    <input className="input" placeholder="Story title" value={storyDraft.title} onChange={(event) => setStoryDraft((current) => ({ ...current, title: event.target.value }))} />
-                    <textarea className="textarea" placeholder="Story description" value={storyDraft.description} onChange={(event) => setStoryDraft((current) => ({ ...current, description: event.target.value }))} />
-                    <input className="input" type="number" min="1" max="13" value={storyDraft.points} onChange={(event) => setStoryDraft((current) => ({ ...current, points: event.target.value }))} />
-                    <input className="input" type="number" min="1" max="10" value={storyDraft.businessValue} onChange={(event) => setStoryDraft((current) => ({ ...current, businessValue: event.target.value }))} />
-                    <input className="input" type="number" min="1" max="13" value={storyDraft.effort} onChange={(event) => setStoryDraft((current) => ({ ...current, effort: event.target.value }))} />
-                    <input className="input" type="number" min="1" max="10" value={storyDraft.risk} onChange={(event) => setStoryDraft((current) => ({ ...current, risk: event.target.value }))} />
-                    <textarea className="textarea" placeholder="Acceptance criteria, one per line" value={storyDraft.criteria} onChange={(event) => setStoryDraft((current) => ({ ...current, criteria: event.target.value }))} />
+                    <input className="input" aria-label="Story title" placeholder="Story title" value={storyDraft.title} onChange={(event) => setStoryDraft((current) => ({ ...current, title: event.target.value }))} />
+                    <textarea className="textarea" aria-label="Story description" placeholder="Story description" value={storyDraft.description} onChange={(event) => setStoryDraft((current) => ({ ...current, description: event.target.value }))} />
+                    <input className="input" aria-label="Story points" type="number" min="1" max="13" value={storyDraft.points} onChange={(event) => setStoryDraft((current) => ({ ...current, points: event.target.value }))} />
+                    <input className="input" aria-label="Story business value" type="number" min="1" max="10" value={storyDraft.businessValue} onChange={(event) => setStoryDraft((current) => ({ ...current, businessValue: event.target.value }))} />
+                    <input className="input" aria-label="Story effort" type="number" min="1" max="13" value={storyDraft.effort} onChange={(event) => setStoryDraft((current) => ({ ...current, effort: event.target.value }))} />
+                    <input className="input" aria-label="Story risk" type="number" min="1" max="10" value={storyDraft.risk} onChange={(event) => setStoryDraft((current) => ({ ...current, risk: event.target.value }))} />
+                    <textarea className="textarea" aria-label="Story acceptance criteria" placeholder="Acceptance criteria, one per line" value={storyDraft.criteria} onChange={(event) => setStoryDraft((current) => ({ ...current, criteria: event.target.value }))} />
                     <button className="button" type="button" onClick={createStory}>Create Story</button>
                   </div>
                 </div>
                 <div className="note">
                   <h4>Task</h4>
                   <div className="stack">
-                    <select className="select" value={taskDraft.storyId} onChange={(event) => setTaskDraft((current) => ({ ...current, storyId: event.target.value }))}>
+                    <select className="select" aria-label="Select story for task" value={taskDraft.storyId} onChange={(event) => setTaskDraft((current) => ({ ...current, storyId: event.target.value }))}>
                       <option value="">Select story</option>
                       {artifacts.stories.map((story) => <option key={story.id} value={story.id}>{story.title}</option>)}
                     </select>
-                    <input className="input" placeholder="Task title" value={taskDraft.title} onChange={(event) => setTaskDraft((current) => ({ ...current, title: event.target.value }))} />
-                    <input className="input" placeholder="Assignee" value={taskDraft.assignee} onChange={(event) => setTaskDraft((current) => ({ ...current, assignee: event.target.value }))} />
-                    <input className="input" placeholder="Role" value={taskDraft.role} onChange={(event) => setTaskDraft((current) => ({ ...current, role: event.target.value }))} />
-                    <select className="select" value={taskDraft.status} onChange={(event) => setTaskDraft((current) => ({ ...current, status: event.target.value }))}>
+                    <input className="input" aria-label="Task title" placeholder="Task title" value={taskDraft.title} onChange={(event) => setTaskDraft((current) => ({ ...current, title: event.target.value }))} />
+                    <input className="input" aria-label="Task assignee" placeholder="Assignee" value={taskDraft.assignee} onChange={(event) => setTaskDraft((current) => ({ ...current, assignee: event.target.value }))} />
+                    <input className="input" aria-label="Task role" placeholder="Role" value={taskDraft.role} onChange={(event) => setTaskDraft((current) => ({ ...current, role: event.target.value }))} />
+                    <select className="select" aria-label="Task status" value={taskDraft.status} onChange={(event) => setTaskDraft((current) => ({ ...current, status: event.target.value }))}>
                       {workflow.map((status) => <option key={status} value={status}>{status}</option>)}
                     </select>
                     <button className="button" type="button" onClick={createTask}>Create Task</button>
@@ -570,10 +570,10 @@ export default function App() {
           <div className="stack">
             <Section title="AI Workspace">
               <div className="stack">
-                <select className="select" value={aiAction} onChange={(event) => setAiAction(event.target.value)}>
+                <select className="select" aria-label="AI action" value={aiAction} onChange={(event) => setAiAction(event.target.value)}>
                   {aiActions.map((action) => <option key={action.value} value={action.value}>{action.label}</option>)}
                 </select>
-                <textarea className="textarea" placeholder="Paste context, sprint outcomes, or meeting notes" value={aiInput} onChange={(event) => setAiInput(event.target.value)} />
+                <textarea className="textarea" aria-label="AI input context" placeholder="Paste context, sprint outcomes, or meeting notes" value={aiInput} onChange={(event) => setAiInput(event.target.value)} />
                 <button className="button" type="button" onClick={runAi}>Run AI</button>
                 <pre className="response">{aiOutput || "Run an AI workflow to generate the selected artifact."}</pre>
               </div>
@@ -581,8 +581,8 @@ export default function App() {
 
             <Section title="Meeting Notes Upload">
               <div className="stack">
-                <input className="input" value={meetingTitle} onChange={(event) => setMeetingTitle(event.target.value)} placeholder="Meeting title" />
-                <textarea ref={meetingRef} className="textarea" value={meetingNotes} onChange={(event) => setMeetingNotes(event.target.value)} placeholder="Paste notes here for extraction into requirements, tasks, risks, and dependencies" />
+                <input className="input" aria-label="Meeting title" value={meetingTitle} onChange={(event) => setMeetingTitle(event.target.value)} placeholder="Meeting title" />
+                <textarea ref={meetingRef} className="textarea" aria-label="Meeting notes" value={meetingNotes} onChange={(event) => setMeetingNotes(event.target.value)} placeholder="Paste notes here for extraction into requirements, tasks, risks, and dependencies" />
                 <input className="input" aria-label="Upload meeting notes file" type="file" accept=".txt,.md,.json,.doc,.docx" onChange={(event) => setMeetingFile(event.target.files?.[0] || null)} />
                 <button className="button button-secondary" type="button" onClick={processMeeting}>Convert meeting notes</button>
               </div>
@@ -593,7 +593,7 @@ export default function App() {
                 <select className="select" aria-label="Select story for comments" value={selectedStoryId} onChange={(event) => setSelectedStoryId(event.target.value)}>
                   {artifacts.stories.map((story) => <option key={story.id} value={story.id}>{story.id}: {story.title}</option>)}
                 </select>
-                <textarea ref={commentRef} className="textarea" value={commentText} onChange={(event) => setCommentText(event.target.value)} placeholder="Add an update, risk, or action" />
+                <textarea ref={commentRef} className="textarea" aria-label="Comment text" value={commentText} onChange={(event) => setCommentText(event.target.value)} placeholder="Add an update, risk, or action" />
                 <button className="button button-secondary" type="button" onClick={addComment}>Add Comment</button>
                 <div className="comment-list">
                   {selectedComments.length ? selectedComments.map((comment) => (
