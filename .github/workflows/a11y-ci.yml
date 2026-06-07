@@ -28,8 +28,11 @@ jobs:
         with:
           node-version: 24
 
+      - name: Install accessibility tooling
+        run: npm install --no-save pa11y-ci puppeteer
+
       - name: Install Puppeteer browser
-        run: npx -y puppeteer browsers install chrome
+        run: npx puppeteer browsers install chrome --path "$HOME/.cache/puppeteer"
 
       - name: Install client dependencies
         run: npm install --prefix client
@@ -47,4 +50,4 @@ jobs:
       - name: Run accessibility audit
         run: |
           echo "Running Pa11y with CHROME_PATH=$CHROME_PATH"
-          PUPPETEER_EXECUTABLE_PATH="$CHROME_PATH" npx -y pa11y-ci --config .pa11yci.cjs http://127.0.0.1:4173 --threshold 0
+          PUPPETEER_CACHE_DIR="$HOME/.cache/puppeteer" PUPPETEER_EXECUTABLE_PATH="$CHROME_PATH" npx pa11y-ci --config .pa11yci.cjs http://127.0.0.1:4173 --threshold 0
