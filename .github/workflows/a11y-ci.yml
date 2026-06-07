@@ -42,7 +42,6 @@ jobs:
         run: npx -y wait-on http://127.0.0.1:4173
 
       - name: Run accessibility audit
-        env:
-          CHROME_PATH: ${{ env.CHROME_PATH }}
-          PUPPETEER_EXECUTABLE_PATH: ${{ env.CHROME_PATH }}
-        run: npx -y pa11y-ci --config .pa11yci.cjs http://127.0.0.1:4173 --threshold 0
+        run: |
+          echo "Running Pa11y with CHROME_PATH=$CHROME_PATH"
+          PUPPETEER_EXECUTABLE_PATH="$CHROME_PATH" npx -y pa11y-ci --config .pa11yci.cjs http://127.0.0.1:4173 --threshold 0
