@@ -119,6 +119,7 @@ Automated accessibility validation runs on every push and pull request using [a1
 
 - Builds the client app.
 - Runs `html-validate` against the source HTML entry and built production HTML.
+- Uses [.htmlvalidate.json](.htmlvalidate.json) to suppress style-only rule noise from generated build output.
 
 Additional production monitoring runs via [pages-health-check.yml](.github/workflows/pages-health-check.yml):
 

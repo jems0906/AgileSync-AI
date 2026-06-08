@@ -31,9 +31,11 @@ jobs:
         run: |
           echo "Running html-validate against source and built HTML"
           set +e
-          npx html-validate --formatter json client/index.html client/dist/index.html > html-validate-report.json
+          npx html-validate --config .htmlvalidate.json --formatter codeframe client/index.html client/dist/index.html
           EXIT_CODE=$?
+          npx html-validate --config .htmlvalidate.json --formatter json client/index.html client/dist/index.html > html-validate-report.json
           cat html-validate-report.json
+          node -e "const fs=require('fs'); const raw=fs.readFileSync('html-validate-report.json','utf8').replace(/^\uFEFF/,'').trim(); const report=raw?JSON.parse(raw):[]; const messages=(Array.isArray(report)?report:[]).flatMap((f)=>Array.isArray(f.messages)?f.messages:[]); const errors=messages.filter((m)=>m.severity===2).length; const warnings=messages.filter((m)=>m.severity===1).length; console.log('html-validate summary: '+errors+' error(s), '+warnings+' warning(s)');"
           exit $EXIT_CODE
 
       - name: Upload accessibility report
